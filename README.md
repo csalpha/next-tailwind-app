@@ -8,3 +8,12 @@
 
     1. npm install -D tailwindcss postcss autoprefixer
     2. npx tailwindcss init -p
+
+3.  Create Layout
+
+    1. create components folder
+    2. create Layout.jsx
+    3. add header
+    4. add main section
+    5. add footer
+    6. add tailwind classes

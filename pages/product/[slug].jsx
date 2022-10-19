@@ -1,21 +1,22 @@
 /****************************** imports ********************************/
-import React from "react";
+import React, { useContext } from "react";
 import Layout from "../../components/Layout";
 import data from "../../utils/data";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
+import { Store } from "../../utils/Store";
 /***************************** End of imports **************************/
 
 /*************** ProductItem - React functional Component **************/
 export default function ProductScreen() {
+  // get state and dispatch
+  const { state, dispatch } = useContext(Store);
+
   /******************************  define constants ********************************/
-  const { query } = useRouter();
-  console.log("Query: ", query);
-  const { slug } = query;
-  console.log("Slug: ", slug);
-  const product = data.products.find((x) => x.slug === slug);
-  console.log("Product: ", product);
+  const { query } = useRouter(); // get query
+  const { slug } = query; // get slug
+  const product = data.products.find((x) => x.slug === slug); // get product
   /*********************************  end constants **********************************/
 
   /********************************* product is not defined **********************************/
@@ -23,6 +24,37 @@ export default function ProductScreen() {
     return <div>Product Not Found</div>;
   }
   /***************************** end product is not defined **********************************/
+
+  /********************************* addToCart function **********************************/
+  const addToCartHandler = () => {
+    /**
+     * find - search in the items of the cart
+     * for the product that we have in this page
+     */
+    const existItem = state.cart.cartItems.find((x) => x.slug === product.slug); // get existItem
+
+    // if we have the product in the cart -> increase the quantity
+    // get quantity
+    const quantity = existItem //true
+      ? existItem.quantity + 1 // false
+      : 1;
+
+    if (product.countInStock < quantity) {
+      alert("Sorry, this item is temporarily out of stock");
+      return;
+    }
+    // use the dispatch from the store provider
+    // dispatch this action: CART_ADD_ITEM
+    dispatch({
+      type: "CART_ADD_ITEM", // string
+      // payload object
+      payload: {
+        ...product, // product properties
+        quantity, // product quantity
+      },
+    });
+  };
+  /***************************** end addToCart function **********************************/
 
   /********************************* return **************************************************/
   return (
@@ -88,7 +120,9 @@ export default function ProductScreen() {
           </div>
           {/********************************* div end *******************************/}
           {/********************************** button **********************************/}
-          <button className='primary-button w-full'>Add to cart</button>
+          <button className='primary-button w-full' onClick={addToCartHandler}>
+            Add to cart
+          </button>
           {/********************************* button end *******************************/}
         </div>
         {/********************************* div end *******************************/}

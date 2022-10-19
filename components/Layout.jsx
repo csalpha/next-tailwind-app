@@ -1,16 +1,21 @@
 /****************************** imports ********************************/
 
-import React from "react";
+import React, { useContext } from "react";
 import Head from "next/head";
 import Link from "next/link";
+import { Store } from "../utils/Store";
 
 /***************************** End of imports **************************/
 
 /***************** Layout - React functional Component *****************/
 
 export default function Layout({ title, children }) {
-  /******************************* return *********************************/
+  /****************************** constants ********************************/
+  const { state } = useContext(Store); // get state
+  const { cart } = state; // get cart
+  /**************************** end constants ******************************/
 
+  /******************************* return *********************************/
   return (
     <>
       {/******************************** Head ******************************* */}
@@ -53,7 +58,15 @@ export default function Layout({ title, children }) {
             </Link>
             {/* className="p-2" */}
             <Link href='/cart'>
-              <a className='p-2'>Cart</a>
+              <a className='p-2'>
+                Cart
+                {cart.cartItems.length > 0 && (
+                  <span className='ml-1 rounded-full bg-red-600 px-2 py-1 text-xs font-bold text-white'>
+                    {/* sum all quantities in the cart items */}
+                    {cart.cartItems.reduce((a, c) => a + c.quantity, 0)}
+                  </span>
+                )}
+              </a>
             </Link>
 
             <Link href='/login'>
@@ -87,7 +100,6 @@ export default function Layout({ title, children }) {
       {/***************************** End of div *************************** */}
     </>
   );
-
   /****************************** End of return ***************************/
 }
 
